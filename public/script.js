@@ -11,6 +11,7 @@ let YourName = prompt('Type Your Name');
 // let bar = confirm('Confirm or deny');
 console.log(YourName);
 
+let vas;
 var peer = new Peer(undefined,{   //we undefine this because peer server create it's own user it
   port: 443,
   host:'/',
