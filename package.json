@@ -15,7 +15,7 @@
     "nodemon": "^2.0.4"
   },
   "scripts": {
-    "devStart": "nodemon server.js"
+    "start": "nodemon server.js"
   },
   "author": "",
   "license": "ISC"
