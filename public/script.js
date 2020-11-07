@@ -11,9 +11,8 @@ let YourName = prompt('Type Your Name');
 // let bar = confirm('Confirm or deny');
 console.log(YourName);
 
-let vas;
 var peer = new Peer(undefined,{   //we undefine this because peer server create it's own user it
-  port: 443,
+  port: 3000,
   host:'/',
   path: '/peerjs'
   //path: '/peerjs',
@@ -36,12 +35,16 @@ navigator.mediaDevices.getUserMedia({     //by using this we can access user dev
           console.log("answered");        
     	    call.answer(stream);               //via this send video stream to caller
           const video = document.createElement('video');
-      
-          //for normal calls
         	call.on('stream', userVideoStream =>{
                addVideoStream(video, userVideoStream);  
     	    });
-     // }else{
+          let gride;
+          peers[call.peer] = call;
+          call.on('close', () =>{
+               video.remove()
+          })
+          
+     //   }else{
      //    console.log("Call denied !");
      //   }
     });
@@ -54,7 +57,6 @@ navigator.mediaDevices.getUserMedia({     //by using this we can access user dev
     })
 
 });
-
 
 //if someone try to join room
 peer.on('open', async id =>{

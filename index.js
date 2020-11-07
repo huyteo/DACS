@@ -57,6 +57,13 @@ io.on('connection', socket =>{
 	    	}
 	    });
 
+	    //grid
+	    socket.on('obect',(sUser, object) =>{
+	    	if(sUser == userI[0]){
+	    		socket.to(roomId).broadcast.emit('grid_obj', object);
+	    	}
+	    });
+
 		//code to massage in roomId
 		socket.on('message', (message,yourName) =>{
 			io.to(roomId).emit('createMessage',message,yourName);
@@ -67,7 +74,7 @@ io.on('connection', socket =>{
 	    	//userS.filter(item => item !== userId);
 	    	var i = userS.indexOf(socket.id);
 	    	userS.splice(i, 1);
-            socket.to(roomId).broadcast.emit('user-disconnected', userI[i]);
+            socket.to(roomId).broadcast.emit('user-disconnected', userI[i], userI);
             //update array
            
             userI.splice(i, 1);
