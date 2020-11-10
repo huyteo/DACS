@@ -22,3 +22,7 @@ steps to start api:
 
   5. step5: "open Browser and type"  localhost:3000   
 
+#Request 
+  1. This is open source project so add your ideas.
+  
+  2. I am currently working on quick quiz and PDF/file share option. If you know how to do this please add in this code.
