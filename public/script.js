@@ -97,6 +97,11 @@ const connectToNewUser = (userId, stream) =>{
 		video.play();
 	})
 	videoGrid.append(video);
+  if (videoGrid.children.length === 1) {
+    videoGrid.style.justifyContent = 'center';
+  } else {
+    videoGrid.style.justifyContent = 'flex-start';
+  }
 }
 
 //to Mute or Unmute Option method

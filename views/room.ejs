@@ -11,7 +11,33 @@
 <script>
 	
 	const ROOM_ID = '<%= roomId %>';
-	console.log(ROOM_ID);	
+	function toggleChat() {
+	    const chatWindow = document.querySelector('.main__right');
+	    const videoSection = document.querySelector('.main__left');
+	    
+	    // Toggle class 'hidden'
+	    chatWindow.classList.toggle('hidden');
+
+	    // Adjust the width of video section
+	    if (chatWindow.classList.contains('hidden')) {
+	        videoSection.style.flex = '1'; // Full width when chat is hidden
+	    } else {
+	        videoSection.style.flex = '0.8'; // Original width when chat is visible
+	    }
+	}
+	 // Function to adjust video section width on page load
+	 function adjustVideoWidthOnLoad() {
+        const chatWindow = document.querySelector('.main__right');
+        const videoSection = document.querySelector('.main__left');
+
+        // If chat window is hidden, make the video section full width
+        if (chatWindow.classList.contains('hidden')) {
+            videoSection.style.flex = '1'; // Full width when chat is hidden
+        }
+    }
+
+    // Run adjustVideoWidthOnLoad when the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', adjustVideoWidthOnLoad);
 </script>
 <script>
 
@@ -76,6 +102,11 @@ window.onclick = function(event) {
 	        			<i class="far fa-hand-paper"></i>
 	        			<span>Hand</span>
 	        		</div>
+					<!-- Thêm icon chat -->
+	        		<div onclick="toggleChat()" class="main__controls__button">
+	        			<i class="fas fa-comment"></i>
+	        			<span>Chat</span>
+	        		</div>
 	        	</div>
 	        	<div class="main__controls__block">	
 	        		<div onclick="disconnectNow()" class="main__controls__button main__leave"  style=" color: Tomato;">
@@ -87,7 +118,7 @@ window.onclick = function(event) {
 	        </div>
     	</div>
         
-        <div class="main__right">
+        <div class="main__right hidden">
              <div class="main__header">
              	<h6 style="padding: 15px 0;">Chat</h6>
 			 </div>
@@ -98,9 +129,10 @@ window.onclick = function(event) {
 			  <div class="main__messages_container">
 				<input id="chat_messages" type="text" placeholder="Type message here...">
 			  </div>
+			  
         </div>
 
-    
+		
 		<script src="script.js" defer></script>
     
 </body>

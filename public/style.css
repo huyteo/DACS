@@ -5,36 +5,41 @@ body{
 #video-grid {
 		display: flex;
 		justify-content: center;
-
 	}
-
+#video-grid>* {
+    margin: 10px;
+}
 video{
 		 height: 300px;
          width: 400px;
          object-fit: cover;
        }
 
-.main{
-    height: 100vh;
-    display: flex;
+.hidden {
+        display: none !important;
+    }
     
-}
-
-.main__left{
-	flex: 0.8;
-	display: flex;
-	flex-direction: column;
-	
-}
-
-.main__videos{
-	flex-grow: 1;
+.main {
+    display: flex;
+    height: 100vh;
+    width: 100vw;
+    }
+    
+.main__left {
+    flex: 0.8;
+    display: flex;
+    flex-direction: column;
+    transition: flex 0.3s ease; /* Thêm hiệu ứng mượt khi thay đổi kích thước */
+ }
+    
+.main__videos {
+    flex-grow: 1;
     background-color: black;
     display: grid;
     justify-content: center;
     align-items: center;
     overflow: hidden;
-}
+    }
 
 .main__controls{
 	display: flex;
@@ -66,13 +71,15 @@ video{
 	font-size: 24px;
 }
 
-.main__right{
-flex: 0.2;
-display: flex;
-flex-direction: column;
-background-color: #242324;
-border-left: 1px solid #3D3D42;
+.main__right {
+    flex: 0.2;
+    display: flex;
+    flex-direction: column;
+    background-color: #242324;
+    border-left: 1px solid #3D3D42;
+    transition: all 0.3s ease; /* Hiệu ứng mượt khi ẩn/hiện khung chat */
 }
+
 .main__header
 {
     color: #F5F5F5;
