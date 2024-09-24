@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meeting Page</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 h-screen flex flex-col">
+    <!-- Header -->
+    <header class="flex items-center justify-between bg-gray-900 p-4 text-white">
+        <h1 class="text-lg font-semibold">Google Meet Clone</h1>
+        <div class="flex space-x-4">
+            <button class="bg-red-600 px-4 py-2 rounded-full hover:bg-red-700">Leave</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex flex-grow p-4 space-x-4">
+        <!-- Video Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 flex-grow">
+    <!-- Video Box 1 -->
+    <div class="relative bg-gray-800 h-64 sm:h-48 md:h-56 lg:h-64 xl:h-72 rounded-lg flex items-center justify-center">
+        <span class="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-tl-lg">
+            John Doe
+        </span>
+        <span class="text-white">Video 1</span>
+    </div>
+    <!-- Video Box 2 -->
+    <div class="relative bg-gray-800 h-64 sm:h-48 md:h-56 lg:h-64 xl:h-72 rounded-lg flex items-center justify-center">
+        <span class="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-tl-lg">
+            Jane Smith
+        </span>
+        <span class="text-white">Video 2</span>
+    </div>
+    <!-- Video Box 3 -->
+    <div class="relative bg-gray-800 h-64 sm:h-48 md:h-56 lg:h-64 xl:h-72 rounded-lg flex items-center justify-center">
+        <span class="absolute bottom-0 left-0 bg-black bg-opacity-50 text-white p-2 rounded-tl-lg">
+            Mark Taylor
+        </span>
+        <span class="text-white">Video 3</span>
+    </div>
+</div>
+
+
+
+        <!-- Participant List -->
+        <div class="w-1/4 bg-white rounded-lg p-4 shadow-md">
+            <h2 class="text-xl font-semibold mb-4">Participants</h2>
+            <ul class="space-y-2">
+                <li class="flex items-center justify-between">
+                    <span>John Doe</span>
+                    <button class="text-red-600">Remove</button>
+                </li>
+                <li class="flex items-center justify-between">
+                    <span>Jane Smith</span>
+                    <button class="text-red-600">Remove</button>
+                </li>
+            </ul>
+        </div>
+    </main>
+
+    <!-- Footer Controls -->
+    <footer class="bg-gray-900 p-4">
+        <div class="flex justify-center space-x-4">
+            <button class="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-600">Mic</button>
+            <button class="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-600">Camera</button>
+            <button class="bg-gray-700 text-white p-2 rounded-full hover:bg-gray-600">Chat</button>
+        </div>
+    </footer>
+</body>
+</html>

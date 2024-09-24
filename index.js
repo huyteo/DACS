@@ -8,6 +8,8 @@ const { ExpressPeerServer } = require('peer');
 const peerServer = ExpressPeerServer(server, {
   debug: true
 });
+
+const userList = [];
  
 app.use('/peerjs', peerServer);
 // const ExpressPeerServer = require('peer').ExpressPeerServer;
@@ -29,6 +31,14 @@ app.get('/', (req, res) =>{
 	res.redirect(`/${uuidV4()}`);  //send uuid to client address bar 
  })
 
+ app.get('/home', (req, res) =>{
+	res.render('home');  //send uuid to client address bar 
+ })
+
+ app.get('/test', (req, res) =>{
+	res.render('test');  //send uuid to client address bar 
+ })
+
 app.get('/:room', (req, res) =>{
 	let addRoomId = req.params.room;
     console.log(addRoomId);
@@ -36,17 +46,23 @@ app.get('/:room', (req, res) =>{
 })
 
 io.on('connection', socket =>{
-	//code to disconnect user using socket simple method ('join-room')
-	socket.on('join-room',(roomId, userId) =>{
+	
+	socket.on('join-room',(roomId, userId, username) =>{
+		let user = {userId, username};
+		userList.push(user);
+
+		socket.emit('ONLINE_LIST', userList);
 	
 		userS.push(socket.id);
 		userI.push(userId);
+
 		//console.log("room Id:- " + roomId,"userId:- "+ userId);    //userId mean new user 
 		
 		//join Room
+		socket.userId = user.userId;
 		console.log("room Id:- " + roomId,"userId:- "+ userId);    //userId mean new user 
 		socket.join(roomId);                                       //join this new user to room
-		socket.to(roomId).broadcast.emit('user-connected',userId); //for that we use this and emit to cliet	
+		socket.to(roomId).broadcast.emit('user-connected',user); //for that we use this and emit to cliet	
 		
 		//Remove User
 	    socket.on('removeUser', (sUser, rUser)=>{
@@ -71,11 +87,14 @@ io.on('connection', socket =>{
 		})
 
 	    socket.on('disconnect', () =>{
-	    	//userS.filter(item => item !== userId);
+			const index = userList.findIndex(e => e.userId === socket.userId);
+			userList.splice(index, 1);
+
+	    	
 	    	var i = userS.indexOf(socket.id);
 	    	userS.splice(i, 1);
-            socket.to(roomId).broadcast.emit('user-disconnected', userI[i], userI);
-            //update array
+            socket.to(roomId).broadcast.emit('user-disconnected', userI[i], userI, socket.userId, user.username);
+          
            
             userI.splice(i, 1);
 	    });
