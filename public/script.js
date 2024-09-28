@@ -39,7 +39,7 @@ peer = new Peer(roomId, {
 let myVideoStream;
 navigator.mediaDevices.getUserMedia({   
   video: true,
-  audio: false
+  audio: true
 }).then(stream => {                    
   addVideoStream(myVideo, stream);
   myVideoStream = stream;

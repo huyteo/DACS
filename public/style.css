@@ -3,13 +3,13 @@ body {
     padding: 0;
 }
 
-/* #video-grid {
+#video-grid {
     display: flex;
-
-} */
+    align-items: center;
+}
 
 video{
-    max-width: none !important;
+     max-width: none !important;
      height: 300px !important;
      width: auto !important;
      object-fit: cover !important;
