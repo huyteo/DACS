@@ -56,12 +56,21 @@ io.on('connection', socket =>{
 		userS.push(socket.id);
 		userI.push(userId);
 
+		socket.on('is-sharing', (isSharing, stream) => {
+			console.log(isSharing);
+			if(isSharing ==true){
+				socket.to(roomId).broadcast.emit('USER_SHARING',isSharing);
+			}else{
+				socket.to(roomId).broadcast.emit('USER_STOP_SHARING',isSharing);
+			}
+		})
+
 		//console.log("room Id:- " + roomId,"userId:- "+ userId);    //userId mean new user 
 		
 		//join Room
 		socket.userId = user.userId;
 		console.log("room Id:- " + roomId,"userId:- "+ userId);    //userId mean new user 
-		socket.join(roomId);                                       //join this new user to room
+		socket.join(roomId);                                      //join this new user to room
 		socket.to(roomId).broadcast.emit('user-connected',user); //for that we use this and emit to cliet	
 		
 		//Remove User

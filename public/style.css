@@ -5,7 +5,7 @@ body {
 
 /* #video-grid {
     display: flex;
-} */
+} */ */
 
 #video-grid video{
     max-width: none !important;
@@ -13,6 +13,7 @@ body {
     object-fit: cover !important;
     transform: scaleX(-1);
 }
+
 
 .main {
     display: flex;
