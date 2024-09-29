@@ -106,13 +106,24 @@ const connectToNewUser = (userId, stream) => {
 
 
 const addVideoStream = (video, stream) => { 
+  // Tạo một div để bọc video
+  const videoWrapper = document.createElement('div');
+  videoWrapper.classList.add('video-wrapper'); // Thêm class để dễ css
+  videoWrapper.style.position = 'relative';
+
   video.srcObject = stream;
   video.controls = true;
   video.addEventListener('loadedmetadata', () => {
     video.play();
-  })
-  videoGrid.append(video);
+  });
+
+  // Thêm video vào div
+  videoWrapper.appendChild(video);
+
+  // Thêm div vào videoGrid
+  videoGrid.append(videoWrapper);
 }
+
 
 
 const muteUnmute = () => {
@@ -146,25 +157,99 @@ const videoOnOff = () => {
   if (enabled) {
     myVideoStream.getVideoTracks()[0].enabled = false;
     unsetVideoButton();
+    socket.emit('camera-off', { userId: peer.id });
   } else {
     setVideoButton();
     myVideoStream.getVideoTracks()[0].enabled = true;
+    socket.emit('camera-on', { userId: peer.id });
   }
-}
-
-const setVideoButton = () => {
-  const html = `<i class="fas fa-video"></i>
-                <span>Stop Video</span>`;
-  document.querySelector('.Video__button').innerHTML = html;
-  console.log("Cammera Mode ON");
 }
 
 const unsetVideoButton = () => {
   const html = `<i class="fas fa-video-slash" style="color:red;"></i>
                 <span>Start Video</span>`;
   document.querySelector('.Video__button').innerHTML = html;
+
+  // Chuyển màn hình video sang màu xám
+  const videoElement = document.querySelector('video');
+  videoElement.style.filter = 'grayscale(100%)'; // Chuyển màu video thành màu xám
+  videoElement.style.backgroundColor = 'gray'; // Đặt nền video là màu xám
+  videoElement.style.border = 'black';
+
+  // Thêm icon ở giữa màn hình màu xám
+const overlay = document.createElement('div');
+overlay.classList.add('camera-off-overlay');
+overlay.innerHTML = `<i class="fas fa-video-slash" style="font-size: 48px; color: red;"></i>`;
+overlay.style.position = 'absolute';
+overlay.style.top = '50%';
+overlay.style.left = '50%';
+overlay.style.transform = 'translate(-50%, -50%)';
+overlay.style.color = 'red';
+
+// Đảm bảo container của video có position: relative để căn giữa icon
+videoElement.parentElement.style.position = 'relative';
+
+// Thêm overlay vào video
+videoElement.parentElement.appendChild(overlay);
+
+
   console.log("Cammera Mode OFF");
 }
+
+const setVideoButton = () => {
+  const html = `<i class="fas fa-video"></i>
+                <span>Stop Video</span>`;
+  document.querySelector('.Video__button').innerHTML = html;
+
+  // Xóa màu xám và icon khi camera bật
+  const videoElement = document.querySelector('video');
+  videoElement.style.filter = 'none';
+  videoElement.style.backgroundColor = 'transparent';
+
+  const overlay = document.querySelector('.camera-off-overlay');
+  if (overlay) {
+    overlay.remove();
+  }
+
+  console.log("Cammera Mode ON");
+}
+
+socket.on('camera-off', (data) => {
+  socket.broadcast.emit('user-camera-off', data);
+});
+
+socket.on('camera-on', (data) => {
+  socket.broadcast.emit('user-camera-on', data);
+});
+
+socket.on('user-camera-off', (data) => {
+  const videoElement = document.getElementById(`video-${data.userId}`);
+  if (videoElement) {
+    const overlay = document.createElement('div');
+    overlay.classList.add('camera-off-overlay');
+    overlay.innerHTML = `<i class="fas fa-video-slash" style="font-size: 48px; color: red;"></i>`;
+    overlay.style.position = 'absolute';
+    overlay.style.top = '50%';
+    overlay.style.left = '50%';
+    overlay.style.transform = 'translate(-50%, -50%)';
+    overlay.style.color = 'red';
+
+    videoElement.parentElement.style.position = 'relative';
+    videoElement.parentElement.appendChild(overlay);
+  }
+});
+
+socket.on('user-camera-on', (data) => {
+  const videoElement = document.getElementById(`video-${data.userId}`);
+  if (videoElement) {
+    const overlay = videoElement.parentElement.querySelector('.camera-off-overlay');
+    if (overlay) {
+      overlay.remove();
+    }
+  }
+});
+
+
 
 const disconnectNow = () => {
   window.location = "http://www.google.com";

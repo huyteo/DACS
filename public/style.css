@@ -15,6 +15,7 @@ video{
      object-fit: cover !important;
    }
 
+
 .main {
     display: flex;
     height: 100vh;
