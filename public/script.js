@@ -1,19 +1,21 @@
 const socket = io('/');  //socket connection
-const videoGrid = document.getElementById('video-grid');
+let videoGrid = document.getElementById('video-grid');
 const userDropDown = document.getElementById('myDropdown');
 const myVideo = document.createElement('video');
 myVideo.removeAttribute('controls');
-myVideo.muted = true;
+// myVideo.muted = true;
 let peers = {}, currentPeer = [];
 let userlist = [];
 let cUser;
 let roomId;
-var peer = null;
+let peer = null;
 let Name;
 let YourName;
+let isSharing = false;
 
 document.addEventListener('DOMContentLoaded', () => {
   Name = localStorage.getItem('Name');
+
   if (Name && Name !== 'null') {
     YourName = Name;
     localStorage.removeItem('Name');
@@ -24,59 +26,61 @@ document.addEventListener('DOMContentLoaded', () => {
 
     window.location.href = `/home`;
     alert('Enter your name to join the room');
-  
+
   }
 });
 
-console.log(YourName);
+console.log();
 
-peer = new Peer(roomId, { 
+peer = new Peer(undefined, {
   port: 3000,
   host: '/',
   path: '/peerjs'
 });
 
 let myVideoStream;
-navigator.mediaDevices.getUserMedia({   
+navigator.mediaDevices.getUserMedia({
   video: true,
   audio: false
-}).then(stream => {                    
+}).then(stream => {
   addVideoStream(myVideo, stream);
   myVideoStream = stream;
 
-  peer.on('call', call => {     
+  peer.on('call', call => {
 
     console.log("answered");
-    call.answer(stream);           
+    console.log(currentPeer.length)
+    call.answer(stream);
     const video = document.createElement('video');
     call.on('stream', userVideoStream => {
       addVideoStream(video, userVideoStream);
     });
-    let gride;
+
     peers[call.peer] = call;
     call.on('close', () => {
       video.remove()
     })
   });
 
-  socket.on('user-connected', (user) => { 
+  socket.on('user-connected', (user) => {
     setTimeout(() => {
-      console.log(user);
-      connectToNewUser(user.userId, stream);
+
+      connectToNewUser(user.userId, stream, roomId);
       $('#user-list').append(
         `<li id="${user.userId}" class="flex items-center justify-between"> <span class="text-white">${user.username}</span></li>`
-    ); 
+      );
+      console.log(user);
     }, 2000);
   })
 
+}).catch(error => {
+  console.error("Error accessing media devices.", error);
 });
 
 
 peer.on('open', async id => {
-
   cUser = id;
   await socket.emit('join-room', ROOM_ID, id, YourName);
-
 })
 
 socket.on('user-disconnected', (userId, u, peerId, username) => {
@@ -90,26 +94,27 @@ socket.on('user-disconnected', (userId, u, peerId, username) => {
 
 
 const connectToNewUser = (userId, stream) => {
+
   console.log('User-connected :-' + userId);
-  let call = peer.call(userId, stream);      
+  let call = peer.call(userId, stream);
   const video = document.createElement('video');
   call.on('stream', userVideoStream => {
-    addVideoStream(video, userVideoStream);  
+    addVideoStream(video, userVideoStream);
   })
   call.on('close', () => {
     video.remove()
   })
   peers[userId] = call;
   currentPeer.push(call.peerConnection);
-  console.log(currentPeer);
+  console.log(currentPeer.length);
 }
 
 
-const addVideoStream = (video, stream) => { 
+const addVideoStream = (video, stream) => {
   video.srcObject = stream;
-  video.controls = true;
+  video.controls = false;
   video.addEventListener('loadedmetadata', () => {
-    video.play();
+  video.play();
   })
   videoGrid.append(video);
 }
@@ -214,10 +219,18 @@ const screenshare = () => {
       noiseSupprission: true
     }
 
-  }).then(stream => {
+  }).then(stream1 => {
+    setScreenSharingStream(stream1);
+
+  isSharing = true;
+  socket.emit('is-sharing', isSharing, );
+
+    let stream = stream1;
+
     let videoTrack = stream.getVideoTracks()[0];
     videoTrack.onended = function () {
       stopScreenShare();
+      
     }
     for (let x = 0; x < currentPeer.length; x++) {
 
@@ -232,7 +245,54 @@ const screenshare = () => {
 
 }
 
+function setScreenSharingStream(stream) {
+  let screenShare = document.getElementById('screen-share');
+  let mainVideos = document.querySelector(".main__videos");
+  let video = document.getElementById('video-share');
+  let videoCam = document.querySelectorAll('#video-grid video');
+
+  videoCam.forEach(video1 => {
+    video1.style.setProperty('max-width', '100%', 'important');
+    video1.style.setProperty('height', 'auto', 'important');
+    video1.style.setProperty('object-fit', 'cover', 'important');
+    video1.classList.add("p-1");
+  });
+
+  videoGrid.className = "";
+  videoGrid.classList.add("m-3", "w-1/6", "gap-4", "flex-grow", "h-auto");
+  mainVideos.style.display = "flex";
+  screenShare.hidden = false;
+  isSharing = true;
+
+  video.srcObject = stream;
+  video.controls = false;
+  video.muted = true;
+  video.play();
+}
+
+
+
 function stopScreenShare() {
+  //hidden screen share
+  let screenShare = document.getElementById('screen-share');
+  screenShare.hidden = true;
+
+  //style grid video
+  let mainVideos = document.querySelector(".main__videos");
+  mainVideos.style.display = "grid";
+
+  //change to old style video cam
+  let videoCam = document.querySelectorAll('#video-grid video');
+  videoCam.forEach(video => {
+    video.style = "";
+  });
+
+  //style video grid
+  videoGrid.className = "";
+  videoGrid.classList.add("grid", "grid-cols-1", "sm:grid-cols-2", "lg:grid-cols-3", "gap-3", "flex-grow");
+
+  isSharing = false;
+  socket.emit('is-sharing', isSharing);
   let videoTrack = myVideoStream.getVideoTracks()[0];
   for (let x = 0; x < currentPeer.length; x++) {
     let sender = currentPeer[x].getSenders().find(function (s) {
@@ -325,7 +385,7 @@ const toggleChat = () => {
     videoSection.style.flex = '0.8';
     chatWindow.style.flex = '0.2';
 
-  } else{
+  } else {
     participantWindow.hidden = true;
     chatWindow.hidden = true;
 
@@ -347,7 +407,7 @@ const toggleParticipants = () => {
     videoSection.style.flex = '0.8';
     participantWindow.style.flex = '0.2';
 
-  } else{
+  } else {
     participantWindow.hidden = true;
     chatWindow.hidden = true;
 
@@ -359,7 +419,51 @@ const toggleParticipants = () => {
 socket.on('ONLINE_LIST', userList => {
   userList.forEach(user => {
     $('#user-list').append(
-        `<li id="${user.userId}" class="flex items-center justify-between"> <span class = "text-white">${user.username}</span></li>`
+      `<li id="${user.userId}" class="flex items-center justify-between"> <span class = "text-white">${user.username}</span></li>`
     );
   });
+})
+
+socket.on('USER_SHARING', (data) => {
+  if (data = true) {
+    let screenShare = document.getElementById('screen-share');
+    let mainVideos = document.querySelector(".main__videos");
+    const videoCam = document.querySelectorAll('#video-grid video');
+    let video = document.getElementById('video-share');
+
+    videoCam.forEach(video1 => {
+      video1.style.setProperty('max-width', '100%', 'important');
+      video1.style.setProperty('height', 'auto', 'important');
+      video1.style.setProperty('object-fit', 'cover', 'important');
+      video1.classList.add("p-1");
+    });
+
+    videoGrid.className = "";
+    videoGrid.classList.add("m-3", "w-1/6", "gap-4", "flex-grow", "h-auto");
+    mainVideos.style.display = "flex";
+    screenShare.hidden = false;
+
+  }
+})
+
+socket.on('USER_STOP_SHARING', data => {
+  if(data == false) {
+    //hidden screen share
+    let screenShare = document.getElementById('screen-share');
+    screenShare.hidden = true;
+
+    //style grid video
+    let mainVideos = document.querySelector(".main__videos");
+    mainVideos.style.display = "grid";
+
+    //change to old style video cam
+    let videoCam = document.querySelectorAll('#video-grid video');
+    videoCam.forEach(video => {
+      video.style = "";
+    });
+
+    //style video grid
+    videoGrid.className = "";
+    videoGrid.classList.add("grid", "grid-cols-1", "sm:grid-cols-2", "lg:grid-cols-3", "gap-3", "flex-grow");
+  }
 })

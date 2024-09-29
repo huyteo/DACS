@@ -5,15 +5,14 @@ body {
 
 /* #video-grid {
     display: flex;
-
 } */
 
-video{
+#video-grid video{
     max-width: none !important;
-     height: 300px !important;
-     width: auto !important;
-     object-fit: cover !important;
-   }
+    height: 300px !important;
+    object-fit: cover !important;
+    transform: scaleX(-1);
+}
 
 .main {
     display: flex;
