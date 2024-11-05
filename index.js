@@ -78,9 +78,9 @@ app.post('/login', async (req, res) => {
 });
 
 app.get('/home', (req, res) => {
-    if (!req.session.userId) {
-        return res.redirect('/login'); // Nếu không đăng nhập, redirect đến trang đăng nhập
-    }
+    // if (!req.session.userId) {
+    //     return res.redirect('/login'); // Nếu không đăng nhập, redirect đến trang đăng nhập
+    // }
     res.render('home'); // Render trang home
 });
 
