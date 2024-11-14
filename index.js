@@ -47,11 +47,18 @@ app.get('/register', (req, res) => {
 app.post('/register', async (req, res) => {
     const { name, email, password, re_password } = req.body;
 
+    // Check if any input field is empty
+    if (!name || !email || !password || !re_password) {
+        return res.status(400).send('Vui lòng nhập đầy đủ thông tin!');
+    }
+
+    // Check if passwords match
     if (password !== re_password) {
         return res.status(400).send('Mật khẩu không khớp!');
     }
 
     try {
+        // Create a new user and save it to the database
         const newUser = new User({ name, email, password });
         await newUser.save();
         res.redirect('/login'); // Redirect đến trang đăng nhập

@@ -1,4 +1,30 @@
 
+function validateForm() {
+			let isValid = true;
+			const email = document.getElementById("email").value;
+			const password = document.getElementById("password").value;
+			const emailError = document.getElementById("emailError");
+			const passwordError = document.getElementById("passwordError");
+
+			// Kiểm tra email hợp lệ
+			const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+			if (!emailPattern.test(email)) {
+				emailError.style.display = "block";
+				isValid = false;
+			} else {
+				emailError.style.display = "none";
+			}
+
+			// Kiểm tra mật khẩu không để trống
+			if (password.trim() === "") {
+				passwordError.style.display = "block";
+				isValid = false;
+			} else {
+				passwordError.style.display = "none";
+			}
+
+			return isValid;
+		}
 (function ($) {
     "use strict";
 

@@ -294,9 +294,14 @@ iframe {
   margin-bottom: 10px;
 }
 
+.error-message {
+  color: red;
+  display: block; /* Đảm bảo thông báo lỗi được hiển thị dưới dạng block */
+}
+
 .label-input100 {
   font-family: Montserrat-Regular;
-  font-size: 18px;
+  font-size: 16px;
   color: #999999;
   line-height: 1.2;
 
@@ -618,3 +623,4 @@ input.input100 {
   background: #333333;
   color: #fff;
 }
+
