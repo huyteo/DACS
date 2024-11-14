@@ -25,6 +25,9 @@
 					<span class="login100-form-title p-b-43">
 						Đăng Nhập để tiếp tục
 					</span>
+					<% if (errorMessage) { %>
+						<div class="error-message" style="color: red; margin-bottom: 15px; text-align: center;"><%= errorMessage %></div>
+					<% } %>
 					
 					<div class="wrap-input100 validate-input" data-validate="Vui lòng nhập email hợp lệ: ex@abc.xyz">
 						<input class="input100" type="text" name="email" id="email">

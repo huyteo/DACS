@@ -68,21 +68,30 @@ app.post('/register', async (req, res) => {
 });
 
 // Route hiển thị trang đăng nhập
+
 app.get('/login', (req, res) => {
-    res.render('login'); // Render trang login.ejs
-});
-
-app.post('/login', async (req, res) => {
-    const { email, pass } = req.body;
-
-    const user = await User.findOne({ email, password: pass });
-    if (!user) {
-        return res.status(400).send('Email hoặc mật khẩu không đúng!');
-    }
-
-    req.session.userId = user._id; // Lưu ID người dùng vào phiên làm việc
-    res.redirect('/home'); // Redirect đến trang home sau khi đăng nhập thành công
-});
+    res.render('login', { errorMessage: null });
+  });
+  
+  app.post('/login', async (req, res) => {
+      const { email, pass } = req.body;
+      let errorMessage = null;
+  
+      try {
+          const user = await User.findOne({ email, password: pass });
+          if (!user) {
+              errorMessage = 'Tài khoản hoặc mật khẩu không đúng'; 
+          } else {
+              req.session.userId = user._id;
+              return res.redirect('/home');
+          }
+      } catch (error) {
+          console.error("Lỗi đăng nhập:", error);
+          errorMessage = 'Đã xảy ra lỗi. Vui lòng thử lại sau.';
+      }
+  
+      res.render('login', { errorMessage: errorMessage }); // hoặc { errorMessage }
+  });
 
 app.get('/home', (req, res) => {
     // if (!req.session.userId) {
