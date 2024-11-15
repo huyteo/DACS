@@ -41,31 +41,35 @@ app.get('/', (req, res) => {
 
 // Route hiển thị trang đăng ký
 app.get('/register', (req, res) => {
-    res.render('register'); // Render trang register.ejs
+    res.render('register', { errorMessage: null });
 });
 
 app.post('/register', async (req, res) => {
     const { name, email, password, re_password } = req.body;
 
-    // Check if any input field is empty
     if (!name || !email || !password || !re_password) {
-        return res.status(400).send('Vui lòng nhập đầy đủ thông tin!');
+        return res.status(400).render('register', { errorMessage: 'Please enter complete information!' });
     }
 
-    // Check if passwords match
     if (password !== re_password) {
-        return res.status(400).send('Mật khẩu không khớp!');
+        return res.status(400).render('register', { errorMessage: 'Passwords do not match!' });
     }
 
     try {
-        // Create a new user and save it to the database
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).render('register', { errorMessage: 'Account has been registered' });
+        }
+
         const newUser = new User({ name, email, password });
         await newUser.save();
-        res.redirect('/login'); // Redirect đến trang đăng nhập
+        res.redirect('/login');
     } catch (error) {
-        res.status(400).send('Đã có lỗi xảy ra: ' + error.message);
+        res.status(500).render('register', { errorMessage: 'An error has occurred: ' + error.message });
     }
 });
+
+
 
 // Route hiển thị trang đăng nhập
 
@@ -73,7 +77,7 @@ app.get('/login', (req, res) => {
     res.render('login', { errorMessage: null });
   });
   
-  app.post('/login', async (req, res) => {
+app.post('/login', async (req, res) => {
       const { email, pass } = req.body;
       let errorMessage = null;
   
